@@ -10,12 +10,12 @@ from .utils import store_articles, scrape_articles
 
 
 if not os.path.exists("article_query/article.db"):
-    try:
+
         
-        db.create_all()
-        store_articles(db)
-     except:
-        pass
+    db.create_all()
+    store_articles(db)
+
+
 
 
 
