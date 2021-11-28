@@ -1,6 +1,7 @@
 from .models import Articles
 import requests, json
 from bs4 import BeautifulSoup
+from sqlalchemy.exc import IntegrityError
 
 
 def store_articles(db):
@@ -15,17 +16,19 @@ def store_articles(db):
         persons = ','.join(total_data[key]['persons'])
         keywords = ','.join(total_data[key]['keywords'])
 
-        new_article = Articles(
-            title = title,
-            link = article_link,
-            date = pub_date,
-            persons = persons,
-            keywords = keywords,
-        )
+        try:
+            new_article = Articles(
+                title = title,
+                link = article_link,
+                date = pub_date,
+                persons = persons,
+                keywords = keywords,
+            )
 
-        db.session.add(new_article)
-
-    db.session.commit()
+            db.session.add(new_article)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
 
 
 
