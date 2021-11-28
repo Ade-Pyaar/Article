@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    {% if page_content == 'form' %}
+
+        <form method="POST" autocomplete="off" id="my_form">
+            <p class="form-group mr-3 mb-3">
+                <label for="keyword">Search Keyword</label>
+                <input type="text" class="form-control" id="keyword" placeholder="Enter your search keyword" name="keyword">
+            </p>
+            
+            <p class="text-right">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </p>
+        </form>
+
+    {% else %}
+    <a href="{{ url_for('home') }}" class="btn btn-primary mb-5">Go Back</a>
+
+        {% for item in result %}
+            <article class="media content-section">
+                <div class="media-body">
+
+                    <h2 class="article-title">{{item.title}}</h2>
+                    <p><a class="article-content mb-3" href="{{item.link}}">Article Link</a></p>
+                    <p class="article-content">Date: {{item.date}} </p>
+                    <p class="article-content">Authors: {{item.persons}} </p>
+                    <p class="article-content">Keywords: {{item.keywords}} </p>
+                </div>
+            </article>
+        {% endfor %}
+
+    {% endif %}
+
+{% endblock content %}
