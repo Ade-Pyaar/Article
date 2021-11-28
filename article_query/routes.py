@@ -1,38 +1,18 @@
-from flask import render_template, request, flash
+from flask import render_template, request, flash, url_for
 from article_query import app, db
 from .models import Articles
-import os, json
+import os
+from .utils import store_articles, scrape_articles
 
 
-def store_articles():
-    with open('total.json', 'r') as file:
-        total_data = json.load(file)
-    
-    
-    for key in total_data.keys():
-        title = total_data[key]['title']
-        article_link = total_data[key]['article_link']
-        pub_date = total_data[key]['pub_link']
-        persons = ','.join(total_data[key]['persons'])
-        keywords = ','.join(total_data[key]['keywords'])
 
-        new_article = Articles(
-            title = title,
-            link = article_link,
-            date = pub_date,
-            persons = persons,
-            keywords = keywords,
-        )
-
-        db.session.add(new_article)
-
-    db.session.commit()
 
 
 
 if not os.path.exists("article_query/article.db"):
     db.create_all()
-    store_articles()
+    store_articles(db)
+
 
 
 
@@ -42,11 +22,11 @@ def home():
     result = []
     if request.method == 'POST':
         page_content = 'result'
-        keyword = request.form.get('keyword').strip()
+        keyword = request.form.get('keyword').strip().lower()
 
         all_articles = Articles.query.order_by(Articles.title)
         for item in all_articles:
-            if keyword in item.keywords:
+            if keyword in item.title.lower():
                 result.append(item)
 
         if len(result) < 1:
@@ -54,3 +34,13 @@ def home():
             flash("No result found for you keyword, try another keyword", 'danger')
     
     return render_template('home.html', title='Article Query', page_content=page_content, result=result)
+
+
+
+
+@app.route('/scrape')
+def scrape():
+    scrape_articles()
+    store_articles(db)
+
+    return url_for('home')

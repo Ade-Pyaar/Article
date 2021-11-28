@@ -33,4 +33,20 @@
 
     {% endif %}
 
+
+
+    <script>
+        var today = new Date()
+        if(today.getDay() == 1){
+            $.ajax({
+            method: "GET",
+            url: "/scrape",
+            data: {},
+            success: function(data){
+              window.location.href = data;
+            }
+          })
+        }
+    </script>
+
 {% endblock content %}
