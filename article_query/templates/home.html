@@ -17,6 +17,7 @@
 
     {% else %}
     <a href="{{ url_for('home') }}" class="btn btn-primary mb-5">Go Back</a>
+    <h2>Result for "{{ keyword }}"</h2>
 
         {% for item in result %}
             <article class="media content-section">

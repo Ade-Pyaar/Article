@@ -18,6 +18,7 @@ def home():
     page_content = 'form'
     result = []
     total_persons = {}
+    keyword = ''
     if request.method == 'POST':
         page_content = 'result'
         keyword = request.form.get('keyword').strip().lower()
@@ -50,4 +51,4 @@ def home():
             flash("No result found for you keyword, try another keyword", 'danger')
 
     
-    return render_template('home.html', title='Article Query', page_content=page_content, result=result, total_persons=total_persons)
+    return render_template('home.html', title='Article Query', page_content=page_content, result=result, total_persons=total_persons, keyword=keyword)
