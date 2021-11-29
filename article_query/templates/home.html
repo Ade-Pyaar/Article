@@ -22,11 +22,14 @@
             <article class="media content-section">
                 <div class="media-body">
 
-                    <h2 class="article-title">{{item.title}}</h2>
-                    <p><a class="article-content mb-3" href="{{item.link}}">Article Link</a></p>
-                    <p class="article-content">Date: {{item.date}} </p>
-                    <p class="article-content">Authors: {{item.persons}} </p>
-                    <p class="article-content">Keywords: {{item.keywords}} </p>
+                    <h2 class="article-title">{{item['title']}}</h2>
+                    <p><a class="article-content mb-3" href="{{item['article_link']}}">Article Link</a></p>
+                    <p class="article-content">Date: {{item['pub_link']}} </p>
+                    <p>
+                        {% for person in item['persons'] %}
+                            <a href="{{ item['persons'][person] }}">{{ person }}</a>
+                        {% endfor %}
+                    <p class="article-content">Keywords: {{', '.join(item['keywords']) }} </p>
                 </div>
             </article>
         {% endfor %}
