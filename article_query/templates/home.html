@@ -22,34 +22,22 @@
             <article class="media content-section">
                 <div class="media-body">
 
-                    <h2 class="article-title">{{item['title']}}</h2>
-                    <p><a class="article-content mb-3" href="{{item['article_link']}}">Article Link</a></p>
-                    <p class="article-content">Date: {{item['pub_link']}} </p>
-                    <p>
-                        {% for person in item['persons'] %}
-                            <a href="{{ item['persons'][person] }}">{{ person }}</a>
-                        {% endfor %}
-                    <p class="article-content">Keywords: {{', '.join(item['keywords']) }} </p>
+                    <h2 class="article-title mb-3">{{item['title']}}</h2>
+                    <p><a class="article-content" href="{{item['link']}}">Article Link</a></p>
+                    <p class="article-content">Date: {{item['date']}} </p>
+                    <p>Authors:
+                        {% if item.id in total_persons.keys() %}
+                            {% for person, link in total_persons[item.id].items() %}
+                                <a href="{{ link }}">{{ person }}</a>
+                            {% endfor %}    
+                        {% else %}
+                        {% endif %}
+                    <p class="article-content">Keywords: {{ item['keywords'] }} </p>
                 </div>
             </article>
         {% endfor %}
 
     {% endif %}
 
-
-
-    <script>
-        var today = new Date()
-        if(today.getDay() == 0){
-            $.ajax({
-            method: "GET",
-            url: "/scrape",
-            data: {},
-            success: function(data){
-              window.location.href = data;
-            }
-          })
-        }
-    </script>
 
 {% endblock content %}

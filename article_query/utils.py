@@ -1,5 +1,6 @@
 import requests, json
 from bs4 import BeautifulSoup
+from .models import Articles
 
 
 
@@ -41,3 +42,31 @@ def scrape_articles():
 
     with open('total.json', 'w') as file:
         json.dump(total, file)
+
+
+
+
+def store_articles(db):
+    with open('total.json', 'r') as file:
+        total_data = json.load(file)
+
+    print("storing articles")
+    
+    for key in total_data.keys():
+        title = total_data[key]['title']
+        article_link = total_data[key]['article_link']
+        pub_date = total_data[key]['pub_link']
+        persons = json.dumps(total_data[key]['persons'])
+        keywords = ', '.join(total_data[key]['keywords'])
+
+        new_article = Articles(
+            title = title,
+            link = article_link,
+            date = pub_date,
+            persons = persons,
+            keywords = keywords,
+        )
+
+        db.session.add(new_article)
+
+    db.session.commit()

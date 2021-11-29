@@ -1,13 +1,14 @@
-from flask import render_template, request, flash, url_for
-from article_query import app
-import json
+from flask import render_template, request, flash
+from article_query import app, db
+import json, os
 
-from .utils import scrape_articles
+from .utils import store_articles
+from .models import Articles
 
 
-
-with open('total.json', 'r') as file:
-    total = json.load(file)
+if not os.path.exists('article_query/article.db'):
+    db.create_all()
+    store_articles(db)
 
 
 
@@ -16,7 +17,7 @@ with open('total.json', 'r') as file:
 def home():
     page_content = 'form'
     result = []
-    people_links = {}
+    total_persons = {}
     if request.method == 'POST':
         page_content = 'result'
         keyword = request.form.get('keyword').strip().lower()
@@ -28,15 +29,20 @@ def home():
 
         else:
 
-            # search the titles for the user keyword
-            for key in total.keys():
-                if keyword in total[key]['title'].lower():
-                    result.append(total[key])
+            all_articles = Articles.query.order_by(Articles.title)
 
-            # search the keywords for the user keyword
-            for key in total.keys():
-                if keyword in ','.join(total[key]['keywords']).lower():
-                    result.append(total[key])
+            for item in all_articles:
+                if keyword in item.title.lower():
+                    result.append(item)
+
+
+            for item in all_articles:
+                if keyword in item.keywords.lower():
+                    result.append(item)
+
+            total_persons = {}
+            for item in result:
+                total_persons[item.id] = json.loads(item.persons)
 
 
         if len(result) < 1:
@@ -44,16 +50,4 @@ def home():
             flash("No result found for you keyword, try another keyword", 'danger')
 
     
-    return render_template('home.html', title='Article Query', page_content=page_content, result=result)
-
-
-
-
-
-
-
-@app.route('/scrape')
-def scrape():
-    scrape_articles()
-
-    return url_for('home')
+    return render_template('home.html', title='Article Query', page_content=page_content, result=result, total_persons=total_persons)
